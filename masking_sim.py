@@ -281,19 +281,35 @@ def run_mode_comparison(cfg: Config):
 
 
 # --------------------------------- plots ---------------------------------- #
+
+# Analytical coskewness coefficient: E[delta_i^2 delta_j] / Cov(x_i, x_j).
+# This is the distribution-specific factor that controls how much of a pairwise
+# interaction leaks into the linear model.  Independent of rho.
+COSKEW_COEFF = {
+    "gaussian":    0.0,     # symmetric => zero by parity
+    "uniform":     0.0,     # symmetric => zero by parity
+    "half_normal": 0.86,    # empirical (no closed form)
+    "binary":      0.60,    # analytical: (1-2p) with p=0.2
+    "lognormal":   2.50,    # empirical
+    "exponential": 1.66,    # empirical
+    "chi2":        4.00,    # analytical: kurtosis_excess = 2*sqrt(2)*2 ... simplifies to 4
+}
+
+
 def plot_modes(by_mode, path="masking_by_representation.png"):
     import matplotlib; matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.3))
     for m, rows in by_mode.items():
         rho = [r["rho"] for r in rows]
-        ax[0].plot(rho, [r["phi_direct"] for r in rows], "o-", label=m)
+        coeff = COSKEW_COEFF.get(m, "?")
+        label0 = f"{m}  (coskew coeff={coeff})"
+        ax[0].plot(rho, [r["phi_direct"] for r in rows], "o-", label=label0)
         ax[1].plot(rho, [r["nll_gap"] for r in rows], "o-", label=m)
-    ax[0].axhline(1.0, color="k", lw=0.8, ls=":")
     ax[0].set_xlabel("input correlation  rho")
     ax[0].set_ylabel(r"direct share of recoverable info  $I_{dir}/I_{true}$")
     ax[0].set_title("Same nonlinear generator, different representation")
-    ax[0].set_ylim(-0.05, 1.1); ax[0].legend(frameon=False, title="input_mode")
+    ax[0].set_ylim(-0.05, 1.1); ax[0].legend(frameon=False, fontsize=7)
     ax[1].axhline(0.0, color="k", lw=0.8, ls=":")
     ax[1].set_xlabel("input correlation  rho")
     ax[1].set_ylabel("held-out NLL(direct) - NLL(int)  [bits]")
