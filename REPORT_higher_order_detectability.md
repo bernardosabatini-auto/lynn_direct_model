@@ -210,7 +210,27 @@ phi_direct vs rho (all K=32, L=1M):
 
 At high rho, the ordering among continuous distributions shifts: chi-squared (skew=2.8) reaches phi_direct=0.65 at rho=0.9, surpassing lognormal (0.42) and exponential (0.56). This reveals that the interaction between skewness and correlation is nonlinear — higher-order moments of the distribution matter increasingly as rho grows. Binary remains the most strongly masked at every rho value.
 
-### 4.6 Overfitting is not a concern
+### 4.6 Lynn's entropy metric and greedy input selection
+
+The results above use phi_direct = I_dir / I_true, which normalizes by recoverable information. Lynn's paper reports a different metric: **(S_tot - S_dir) / S_tot**, which normalizes by total output entropy. We computed both, and also ran Lynn's exact greedy optimal input selection algorithm (add one input at a time, choosing whichever maximally reduces S_dir) on all seven distributions at rho=0.5.
+
+Lynn's metric (S_tot - S_dir) / S_tot at rho=0.5:
+
+| Mode | All 32 inputs | Greedy best 5 | Greedy best 10 | phi_direct |
+|---|---|---|---|---|
+| binary | 32.2% | 26.2% | 30.1% | 0.42 |
+| gaussian | -0.1% | -0.1% | -0.1% | 0.01 |
+| uniform | -0.1% | -0.1% | -0.1% | 0.00 |
+| lognormal | 23.8% | 19.7% | 22.0% | 0.26 |
+| half_normal | 15.5% | 12.1% | 14.4% | 0.18 |
+| exponential | 26.0% | 22.1% | 24.3% | 0.28 |
+| chi-squared | 21.8% | 17.2% | 20.4% | 0.23 |
+
+The greedy algorithm correctly identifies the most informative inputs (input ordering is consistent across distributions, reflecting the shared generator wiring). However, the linear model cannot exploit these inputs for symmetric distributions — Gaussian and uniform show 0% explained variability regardless of how many optimally selected inputs are included. For binary inputs at rho=0.5, the greedy procedure captures 32% with all inputs; at rho=0.9 (where Lynn analyzes real data), this rises to ~79%, approaching his reported ~90%.
+
+Full numerical results are in `lynn_metric_results.csv` (rho sweep) and `greedy_trajectories.csv` (greedy selection step-by-step).
+
+### 4.7 Overfitting is not a concern
 
 At rho=0 with Gaussian inputs, phi_direct = 0.00 and the interaction model achieves phi_int = 1.00. If the interaction model were overfitting, it would show inflated phi_int at low correlation where interactions are hardest to fit. Instead, it achieves exactly the oracle ceiling. The 1M held-out test set and ridge regularization ensure all metrics reflect genuine generalization.
 
