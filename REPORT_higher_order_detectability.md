@@ -228,7 +228,23 @@ Lynn's metric (S_tot - S_dir) / S_tot at rho=0.5:
 
 The greedy algorithm correctly identifies the most informative inputs (input ordering is consistent across distributions, reflecting the shared generator wiring). However, the linear model cannot exploit these inputs for symmetric distributions — Gaussian and uniform show 0% explained variability regardless of how many optimally selected inputs are included. For binary inputs at rho=0.5, the greedy procedure captures 32% with all inputs; at rho=0.9 (where Lynn analyzes real data), this rises to ~79%, approaching his reported ~90%.
 
-Full numerical results are in `lynn_metric_results.csv` (rho sweep) and `greedy_trajectories.csv` (greedy selection step-by-step).
+We repeated this at K=320 (10x more inputs, 1200 interaction pairs, L=200k, greedy capped at 50 steps):
+
+Lynn's metric (S_tot - S_dir) / S_tot at K=320, rho=0.5:
+
+| Mode | All 320 inputs | Greedy best 5 | Greedy best 20 | Greedy best 50 |
+|---|---|---|---|---|
+| binary | 10.0% | 6.2% | 7.8% | 8.7% |
+| gaussian | -0.4% | -0.6% | -0.5% | -0.5% |
+| uniform | -0.3% | -0.5% | -0.4% | -0.4% |
+| lognormal | 14.9% | 8.5% | 10.5% | 12.1% |
+| half_normal | 2.3% | 1.3% | 1.9% | 2.1% |
+| exponential | 11.8% | 6.6% | 8.2% | 9.5% |
+| chi-squared | 1.0% | 0.6% | 0.9% | 0.9% |
+
+The same qualitative pattern holds at 10x scale: Gaussian and uniform remain at 0%, while skewed and binary distributions show masking. The absolute values are lower because the interaction signal is spread across 1200 pairs rather than 120 — each pair's contribution to the total is diluted.
+
+Full numerical results are in `lynn_metric_results.csv` and `lynn_metric_results_K320.csv` (rho sweep), `greedy_trajectories.csv` and `greedy_trajectories_K320.csv` (greedy selection step-by-step).
 
 ### 4.7 Overfitting is not a concern
 
