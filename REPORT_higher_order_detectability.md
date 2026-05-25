@@ -244,7 +244,7 @@ Lynn's metric (S_tot - S_dir) / S_tot at K=320, rho=0.5:
 
 The same qualitative pattern holds at 10x scale: Gaussian and uniform remain at 0%, while skewed and binary distributions show masking. The absolute values are lower because the interaction signal is spread across 1200 pairs rather than 120 — each pair's contribution to the total is diluted.
 
-Full numerical results are in `lynn_metric_results.csv` and `lynn_metric_results_K320.csv` (rho sweep), `greedy_trajectories.csv` and `greedy_trajectories_K320.csv` (greedy selection step-by-step).
+Full numerical results are in `results/lynn_metric_results.csv` and `results/lynn_metric_results_K320.csv` (rho sweep), `results/greedy_trajectories.csv` and `results/greedy_trajectories_K320.csv` (greedy selection step-by-step).
 
 ### 4.7 The greedy algorithm selects interaction terms when allowed
 
@@ -266,7 +266,7 @@ We extended Lynn's greedy input selection to choose from a combined pool of **bo
 
 This demonstrates that Lynn's "perceptron" conclusion depends entirely on restricting the candidate set to individual inputs. When the greedy algorithm is free to choose interaction terms, it preferentially selects them — because they carry more predictive information than any individual input.
 
-Full step-by-step results are in `greedy_combined_K32.csv`.
+Full step-by-step results are in `results/greedy_combined_K32.csv`.
 
 ### 4.8 Overfitting is not a concern
 
