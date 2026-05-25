@@ -246,7 +246,29 @@ The same qualitative pattern holds at 10x scale: Gaussian and uniform remain at 
 
 Full numerical results are in `lynn_metric_results.csv` and `lynn_metric_results_K320.csv` (rho sweep), `greedy_trajectories.csv` and `greedy_trajectories_K320.csv` (greedy selection step-by-step).
 
-### 4.7 Overfitting is not a concern
+### 4.7 The greedy algorithm selects interaction terms when allowed
+
+We extended Lynn's greedy input selection to choose from a combined pool of **both** individual inputs (x_i) and pairwise products (x_i * x_j) — 32 linear + 496 product = 528 candidates. The generator has zero linear drive and 120 true interaction pairs.
+
+**Full model fit (all 528 features):** The interaction model dramatically outperforms the direct model across all distributions:
+
+| Mode | Lynn (direct only) | Lynn (with products) | nll_gap (bits) | True pairs in top-20 weights |
+|---|---|---|---|---|
+| gaussian | 0.1% | 97.0% | 0.59 | 20/20 |
+| uniform | 0.4% | 50.9% | 0.31 | 20/20 |
+| binary | 32.1% | 77.7% | 0.28 | 20/20 |
+| lognormal | 23.6% | 92.1% | 0.41 | 20/20 |
+| half_normal | 15.5% | 86.6% | 0.43 | 20/20 |
+| exponential | 26.0% | 93.9% | 0.41 | 20/20 |
+| chi-squared | 21.8% | 97.5% | 0.46 | 20/20 |
+
+**Greedy selection from combined pool:** The algorithm overwhelmingly selects product terms over linear ones. For Gaussian inputs, all 10 first selections are products (lynn reaches 57.8% at n=10 vs 0% with linear-only). For binary, 7 of the first 10 are products. Across all distributions, the algorithm correctly identifies true interaction pairs in its early selections.
+
+This demonstrates that Lynn's "perceptron" conclusion depends entirely on restricting the candidate set to individual inputs. When the greedy algorithm is free to choose interaction terms, it preferentially selects them — because they carry more predictive information than any individual input.
+
+Full step-by-step results are in `greedy_combined_K32.csv`.
+
+### 4.8 Overfitting is not a concern
 
 At rho=0 with Gaussian inputs, phi_direct = 0.00 and the interaction model achieves phi_int = 1.00. If the interaction model were overfitting, it would show inflated phi_int at low correlation where interactions are hardest to fit. Instead, it achieves exactly the oracle ceiling. The 1M held-out test set and ridge regularization ensure all metrics reflect genuine generalization.
 
