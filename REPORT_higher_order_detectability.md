@@ -286,7 +286,41 @@ For binary inputs, the algorithm selects **100% linear terms** — correctly ide
 
 Full results are in `results/greedy_linear_generator_K32.csv`.
 
-### 4.9 Overfitting is not a concern
+### 4.9 Extended greedy selection (120 steps)
+
+We extended the combined greedy selection to 120 steps (matching the number of true interaction pairs in the generator) for both the interaction-only and linear-only generators across all 7 distributions.
+
+**Interaction generator — greedy selects products and recovers true pairs:**
+
+| Mode | # Linear / 120 | # Products / 120 | # True pairs found | Lynn (greedy n=120) | Lynn (full interaction model) |
+|---|---|---|---|---|---|
+| gaussian | 0 | 120 | 112 | 91.1% | 96.8% |
+| binary | 10 | 110 | 110 | 68.7% | 77.5% |
+| chi-squared | 15 | 105 | 105 | 68.0% | 97.3% |
+| exponential | 21 | 99 | 94 | 69.9% | 93.7% |
+| half_normal | 21 | 99 | 99 | 64.9% | 86.4% |
+| lognormal | 19 | 101 | 97 | 64.8% | 91.9% |
+| uniform | 28 | 92 | 89 | 47.6% | 50.7% |
+
+For Gaussian inputs, the algorithm selects **zero** linear terms and recovers 112 of 120 true interaction pairs. Across all distributions, the vast majority of selections are products.
+
+**Linear generator — greedy selects linear terms first:**
+
+| Mode | # Linear / 120 | # Products / 120 | Lynn (greedy n=120) | Lynn (all 32 linear) |
+|---|---|---|---|---|
+| binary | 32 | 88 | 51.9% | 51.6% |
+| gaussian | 32 | 88 | 94.7% | 94.4% |
+| uniform | 32 | 88 | 79.7% | 79.6% |
+| half_normal | 32 | 88 | 80.4% | 80.2% |
+| chi-squared | 32 | 88 | 88.2% | 88.0% |
+| lognormal | 26 | 94 | 100.0% | 84.5% |
+| exponential | 32 | 88 | 100.0% | 87.4% |
+
+For most distributions, all 32 linear terms are selected, and the remaining 88 product slots add negligible value — the greedy performance matches the all-linear model. The algorithm correctly identifies linear structure when it exists.
+
+Full step-by-step trajectories and summary are in `results/greedy_combined_120steps.csv` and `results/greedy_comparison_120steps.csv`.
+
+### 4.10 Overfitting is not a concern
 
 At rho=0 with Gaussian inputs, phi_direct = 0.00 and the interaction model achieves phi_int = 1.00. If the interaction model were overfitting, it would show inflated phi_int at low correlation where interactions are hardest to fit. Instead, it achieves exactly the oracle ceiling. The 1M held-out test set and ridge regularization ensure all metrics reflect genuine generalization.
 
